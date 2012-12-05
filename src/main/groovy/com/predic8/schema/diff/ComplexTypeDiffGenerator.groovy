@@ -32,6 +32,12 @@ class ComplexTypeDiffGenerator extends UnitDiffGenerator{
     lDiffs
   }
   
+  def addAll(def a, def b) {
+    for (def c in b) {
+      a.add(c);
+    }
+  }
+
   private compareModel(){
     def aType = a
     def bType = b
@@ -41,11 +47,14 @@ class ComplexTypeDiffGenerator extends UnitDiffGenerator{
     } else {
       lDiffs = aType.model?.compare(generator, bType.model ) ?: []
     }
+
     
-    lDiffs.addAll(generator.compareAttributes(aType, bType))
-//    compareAttributeGroups not implemented yet!
-//    lDiffs.addAll(generator.compareAttributeGroups(aType, bType))
-    lDiffs.addAll(generator.compareAnnotation(aType.annotation, bType.annotation))
+//    lDiffs.addAll(generator.compareAttributes(aType, bType))
+    addAll(lDiffs, generator.compareAttributes(aType, bType))
+////    compareAttributeGroups not implemented yet!
+////    lDiffs.addAll(generator.compareAttributeGroups(aType, bType))
+//    lDiffs.addAll(generator.compareAnnotation(aType.annotation, bType.annotation))
+    addAll(lDiffs, generator.compareAnnotation(aType.annotation, bType.annotation))
     lDiffs
   }
 }

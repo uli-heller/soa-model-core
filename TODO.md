@@ -1,7 +1,11 @@
 TODO
 ====
 
-## groovy.lang.MissingMethodException: No signature of method: com.predic8.soamodel.Difference.addAll() is applicable for argument types: (java.util.ArrayList) values: [[]]
+## Open Todos
+
+## Closed Todos
+
+### groovy.lang.MissingMethodException: No signature of method: com.predic8.soamodel.Difference.addAll() is applicable for argument types: (java.util.ArrayList) values: [[]]
 
 We do get this exception when trying to create a wsdl diff for wsdl files containing `xs:all`.
 
