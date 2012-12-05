@@ -1,0 +1,124 @@
+<project name="soa-model-core" default="dist">
+
+<available property="src.main.java.exists"   file="src/main/java"/>
+<available property="src.test.java.exists"   file="src/test/java"/>
+<available property="src.main.groovy.exists" file="src/main/groovy"/>
+<available property="src.test.groovy.exists" file="src/test/groovy"/>
+
+<loadproperties>
+  <file file="build.properties"/>
+</loadproperties>
+
+<available property="commons-httpclient-jar.exists" file="${commons-httpclient-jar}"/>
+
+<condition property="EXT" value=".bat" else=".sh">
+  <os family="windows"/>
+</condition>
+<condition property="GROOVY" value="groovy.bat" else="groovy">
+  <os family="windows"/>
+</condition>
+
+<property name="classes" value="build/classes" />
+
+<path id="classpath.base">
+  <pathelement location="${classes}" />
+  <fileset dir="lib">
+    <include name="**/*.jar"/>
+  </fileset>
+</path>
+
+<path id="classpath.groovy">
+  <path refid="classpath.base" />
+  <pathelement location="bin/groovy/lib/*" />
+</path>
+
+<target name="-prepare" depends="-prepare-commons-httpclient">
+  <exec executable="${basedir}/bin/prepare${EXT}" dir="${basedir}">
+  </exec>
+</target> <!-- -prepare -->
+
+<target name="-prepare-commons-httpclient" unless="${commons-httpclient-jar.exists}">
+  <unzip src="${commons-httpclient-zip}" dest="tmp/chc">
+    <patternset>
+      <include name="**/*.jar"/>
+    </patternset>
+  </unzip>
+  <copy todir="lib" flatten="true">
+    <fileset dir="tmp/chc">
+      <include name="**/*.jar"/>
+    </fileset>
+  </copy>
+</target> <!-- -prepare-comons-httpclient -->
+
+<target name="compile" depends="lib, compile-java, compile-groovy" />
+
+<target name="compile-java" if="${src.main.java.exists}">
+  <mkdir dir="${classes}"/>
+  <javac srcdir="src/main/java" debug="true" destdir="${classes}" includeAntRuntime="false">
+    <classpath>
+      <path refid="classpath.base" />
+    </classpath>
+  </javac>
+</target>
+
+<target name="compile-groovy" depends="-prepare" if="${src.main.groovy.exists}">
+  <mkdir dir="${classes}"/>
+  <groovyc srcdir="src/main/groovy" destdir="${classes}">
+    <classpath>
+      <path refid="classpath.groovy" />
+    </classpath>
+  </groovyc>
+</target>
+
+<target name="clean">
+  <delete dir="tmp" />
+  <delete dir="lib" />
+  <delete dir="build" />
+  <delete dir="bin/groovy" />
+  <delete file="soa-model-core.jar" />
+  <delete file="httpcat.jar" />
+</target>
+
+<target name="jar" depends="compile">
+  <jar destfile="soa-model-core.jar" basedir="build/classes">
+  </jar>
+</target>
+
+<target name="dist" depends="jar">
+</target>
+
+<target name="lib" depends="groovy-lib">
+  <mkdir dir="lib" />
+</target>
+
+<target name="groovy-lib" depends="-prepare">
+  <copy todir="lib" flatten="true">
+    <fileset dir="bin/groovy/lib">
+      <include name="**/*.jar" />
+    </fileset>
+  </copy>
+  <taskdef name="groovyc"
+         classname="org.codehaus.groovy.ant.Groovyc"
+         classpathref="classpath.groovy"/>
+</target>
+
+<target name="httpcat.jar" depends="compile">
+  <jar destfile="httpcat.jar" basedir="build/classes" includes="**/HttpCat.class">
+    <manifest>
+      <attribute name="Main-Class" value="com.daemonspoint.httpcat.HttpCat"/>
+    </manifest>
+  </jar>
+</target>
+
+<target name="httpcat" depends="httpcat.jar">
+  <copy file="scripts/dist.sh" tofile="bin/httpcat.sh"/>
+  <concat append="true" binary="true" destfile="bin/httpcat.sh">
+    <fileset dir="." includes="httpcat.jar"/>
+  </concat>
+  <chmod file="bin/httpcat.sh" perm="a+x"/>
+  <copy file="scripts/dist.bat" tofile="bin/httpcat.bat"/>
+  <concat append="true" binary="true" destfile="bin/httpcat.bat">
+    <fileset dir="." includes="httpcat.jar"/>
+  </concat>
+</target>
+</project>

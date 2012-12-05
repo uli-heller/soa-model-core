@@ -15,7 +15,7 @@
 package com.predic8.xml.util
 
 import java.net.ConnectException;
-import groovyjarjarantlr.RecognitionException;
+import antlr.RecognitionException;
 import org.apache.commons.httpclient.params.*
 import org.apache.commons.httpclient.methods.*
 import org.apache.commons.httpclient.*
