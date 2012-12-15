@@ -54,7 +54,7 @@
 
 <target name="compile-java" if="${src.main.java.exists}">
   <mkdir dir="${classes}"/>
-  <javac srcdir="src/main/java" debug="true" destdir="${classes}" includeAntRuntime="false">
+  <javac srcdir="src/main/java" debug="true" destdir="${classes}" includeAntRuntime="false" target="1.5" source="1.5">
     <classpath>
       <path refid="classpath.base" />
     </classpath>
@@ -76,11 +76,12 @@
   <delete dir="build" />
   <delete dir="bin/groovy" />
   <delete file="soa-model-core.jar" />
+  <delete file="soa-model-core-${buildTag}.jar" />
   <delete file="httpcat.jar" />
 </target>
 
 <target name="jar" depends="compile">
-  <jar destfile="soa-model-core.jar" basedir="build/classes">
+  <jar destfile="soa-model-core-${buildTag}.jar" basedir="build/classes">
   </jar>
 </target>
 
