@@ -32,12 +32,15 @@
   <pathelement location="bin/groovy/lib/*" />
 </path>
 
-<target name="-prepare" depends="-prepare-commons-httpclient">
-  <exec executable="${basedir}/bin/prepare${EXT}" dir="${basedir}">
-  </exec>
+<target name="-prepare" depends="-prepare-download, -prepare-commons-httpclient">
 </target> <!-- -prepare -->
 
-<target name="-prepare-commons-httpclient" unless="${commons-httpclient-jar.exists}">
+<target name="-prepare-download">
+  <exec executable="${basedir}/bin/prepare${EXT}" dir="${basedir}">
+  </exec>
+</target> <!-- -prepare-download -->
+
+<target name="-prepare-commons-httpclient" depends="-prepare-download" unless="${commons-httpclient-jar.exists}">
   <unzip src="${commons-httpclient-zip}" dest="tmp/chc">
     <patternset>
       <include name="**/*.jar"/>
@@ -112,12 +115,12 @@
 </target>
 
 <target name="httpcat" depends="httpcat.jar">
-  <copy file="scripts/dist.sh" tofile="bin/httpcat.sh"/>
+  <copy overwrite="true" file="scripts/dist.sh" tofile="bin/httpcat.sh"/>
   <concat append="true" binary="true" destfile="bin/httpcat.sh">
     <fileset dir="." includes="httpcat.jar"/>
   </concat>
   <chmod file="bin/httpcat.sh" perm="a+x"/>
-  <copy file="scripts/dist.bat" tofile="bin/httpcat.bat"/>
+  <copy overwrite="true" file="scripts/dist.bat" tofile="bin/httpcat.bat"/>
   <concat append="true" binary="true" destfile="bin/httpcat.bat">
     <fileset dir="." includes="httpcat.jar"/>
   </concat>
